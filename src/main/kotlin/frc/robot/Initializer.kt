@@ -65,36 +65,4 @@ val drive =
         driveSimulation?.let { it::setSimulationWorldPose } ?: { _: Pose2d -> },
     )
 
-private val visionIOs =
-    when (CURRENT_MODE) {
-        Mode.REAL ->
-            OV_NAME_TO_CONFIG.map {
-                val config = it.value
-                VisionIOPhotonVision(
-                    it.key,
-                    config.robotToCamera,
-                    config.botRotation,
-                    config.tagIdsToFilter,
-                )
-            }
-        Mode.SIM ->
-            OV_NAME_TO_CONFIG.map {
-                val config = it.value
-                VisionIOPhotonVisionSim(
-                    it.key,
-                    config.robotToCamera,
-                    config.botRotation,
-                    config.tagIdsToFilter,
-                ) {
-                    drive.pose
-                }
-            }
-        Mode.REPLAY -> emptyList()
-    }.toTypedArray()
 
-val vision =
-    Vision(
-        BetterPoseEstimator.getInstance()::addVisionObservation,
-        drive::resetOdometry,
-        *visionIOs,
-    )
