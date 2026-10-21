@@ -12,8 +12,12 @@ class Vision(val consumer: (Pose2d, Double, DMatrix3) -> Unit) {
     private lateinit var curStdDevs: DMatrix3
     private val curStdDevsGetter: DMatrix3 get() = curStdDevs
 
+
+
     private val photonCamera: PhotonCamera = PhotonCamera("Camera1")
     private val photonEstimator: PhotonPoseEstimator = PhotonPoseEstimator(tagLayout, robotToCam)
+
+    // val matrix<N3, N1> kSingleTagStdDevs = VecBuild.fill(4,4,8)
 
     fun periodic() {
         var visionEst:Optional<EstimatedRobotPose>
@@ -25,14 +29,18 @@ class Vision(val consumer: (Pose2d, Double, DMatrix3) -> Unit) {
             updateEstimationStdDevs(visionEst, result.getTargets())
             visionEst.ifPresent {
                 consumer(it.estimatedPose.toPose2d(), it.timestampSeconds, curStdDevsGetter)
+                // var estStdDevs = getEstimatationStdDevs()
             }
         }
     }
 
-    private fun updateEstimationStdDevs(visionEst: Optional<EstimatedRobotPose>, targets: List<PhotonTrackedTarget>) {
-
+    private fun updateEstimationStdDevs(
+        visionEst: Optional<EstimatedRobotPose>, targets: List<PhotonTrackedTarget>) {
+       // if (estimatedPose.isEmpty()){
+       // curStdDevs = kSingleTagStdDevs
+        }
     }
 
-}
+
 
 

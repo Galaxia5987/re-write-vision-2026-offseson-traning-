@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision
 import org.wpilib.math.geometry.Rotation3d
 import org.wpilib.math.geometry.Transform3d
 import org.wpilib.math.geometry.Translation3d
+import org.wpilib.math.numbers.N1
 import org.wpilib.math.util.Units
 import org.wpilib.vision.apriltag.AprilTagFieldLayout
 import org.wpilib.vision.apriltag.AprilTagFields
