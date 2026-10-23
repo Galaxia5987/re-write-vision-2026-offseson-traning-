@@ -1,6 +1,5 @@
 package frc.robot
 
-import frc.robot.lib.BetterPoseEstimator
 import frc.robot.lib.Mode
 import frc.robot.subsystems.drive.Drive
 import frc.robot.subsystems.drive.ModuleIOs.ModuleIO
@@ -64,5 +63,3 @@ val drive =
         driveModuleIOs,
         driveSimulation?.let { it::setSimulationWorldPose } ?: { _: Pose2d -> },
     )
-
-
