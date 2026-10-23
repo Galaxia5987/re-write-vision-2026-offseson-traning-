@@ -1,15 +1,26 @@
 package frc.robot.subsystems.vision
 
+import frc.robot.CURRENT_MODE
+import frc.robot.Robot
+import frc.robot.isSim
+import frc.robot.lib.Mode
+import frc.robot.lib.extensions.rotations
+import frc.robot.lib.unit_test.SimulationResettable
 import java.util.Optional
 import org.photonvision.EstimatedRobotPose
 import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
+import org.photonvision.simulation.PhotonCameraSim
+import org.photonvision.simulation.SimCameraProperties
+import org.photonvision.simulation.VisionSystemSim
 import org.photonvision.targeting.PhotonTrackedTarget
 import org.wpilib.math.geometry.Pose2d
+import org.wpilib.math.geometry.Rotation2d
 import org.wpilib.math.linalg.Matrix
 import org.wpilib.math.linalg.VecBuilder
 import org.wpilib.math.numbers.N1
 import org.wpilib.math.numbers.N3
+import java.util.function.BiConsumer
 
 class Vision(val consumer: (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
     private lateinit var curStdDevs: Matrix<N3, N1>
@@ -20,9 +31,27 @@ class Vision(val consumer: (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
     private val photonEstimator: PhotonPoseEstimator =
         PhotonPoseEstimator(tagLayout, robotToCam)
 
-    // fun Vision(EstimateConsumer : estConsumer) {
-    //     this.estConsumer = estConsumer
-    //  }
+
+
+    fun Vision (EstimateConsumer : (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
+        val camera = photonCamera
+        val photonEstimator = photonEstimator
+
+        if (CURRENT_MODE == Mode.SIM) {
+            val visionSim = VisionSystemSim("main")
+            visionSim.addAprilTags(tagLayout)
+            var camraProp = SimCameraProperties()
+            camraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90.0))
+            camraProp.setCalibError(0.35, 0.10)
+            camraProp.setFPS(15.0)
+            camraProp.setAvgLatencyMs(50.0)
+            camraProp.setLatencyStdDevMs(15.0)
+            val camaraSim = PhotonCameraSim(camera, camraProp)
+            // visionSim.addCamera(camaraSim, kRobotToCam)
+
+        }
+    }
+
 
     fun periodic() {
         var visionEst: Optional<EstimatedRobotPose>
