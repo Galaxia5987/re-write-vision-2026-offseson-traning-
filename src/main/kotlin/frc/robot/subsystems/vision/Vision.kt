@@ -20,6 +20,8 @@ import org.wpilib.math.linalg.Matrix
 import org.wpilib.math.linalg.VecBuilder
 import org.wpilib.math.numbers.N1
 import org.wpilib.math.numbers.N3
+import org.wpilib.smartdashboard.Field2d
+import org.wpilib.vision.apriltag.AprilTagFieldLayout
 import java.util.function.BiConsumer
 
 class Vision(val consumer: (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
@@ -30,12 +32,14 @@ class Vision(val consumer: (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
     private val photonCamera: PhotonCamera = PhotonCamera("Camera1")
     private val photonEstimator: PhotonPoseEstimator =
         PhotonPoseEstimator(tagLayout, robotToCam)
+    private val visionSim : VisionSystemSim = VisionSystemSim("VisionSystemSim")
 
 
-
-    fun Vision (EstimateConsumer : (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
+    fun Vision(EstimateConsumer: (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
         val camera = photonCamera
         val photonEstimator = photonEstimator
+
+
 
         if (CURRENT_MODE == Mode.SIM) {
             val visionSim = VisionSystemSim("main")
@@ -47,7 +51,9 @@ class Vision(val consumer: (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
             camraProp.setAvgLatencyMs(50.0)
             camraProp.setLatencyStdDevMs(15.0)
             val camaraSim = PhotonCameraSim(camera, camraProp)
-            // visionSim.addCamera(camaraSim, kRobotToCam)
+            visionSim.addCamera(camaraSim, transform3d)
+            camaraSim.enableDrawWireframe(true)
+
 
         }
     }
@@ -67,7 +73,7 @@ class Vision(val consumer: (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
                     it.timestampSeconds,
                     curStdDevsGetter,
                 )
-                // var estStdDevs = getEstimatationStdDevs()
+                var estStdDevs = getEstimatationStdDevs()
             }
         }
     }
@@ -122,4 +128,31 @@ class Vision(val consumer: (Pose2d, Double, Matrix<N3, N1>) -> Unit) {
             }
         }
     }
+
+    fun getEstimatationStdDevs(): Matrix<N3, N1> {
+        return curStdDevs
+    }
+
+    fun simulationPeriodic(pose2d: Pose2d, robotSimPose: Pose2d) {
+        visionSim.update(robotSimPose)
+    }
+
+    fun resetSimPose(pose: Pose2d) {
+        if (CURRENT_MODE == Mode.SIM) visionSim.resetRobotPose(pose)
+    }
+
+    fun getSimDebugField(): Field2d? {
+        if (CURRENT_MODE == Mode.SIM)
+            return null
+            return visionSim.getDebugField()
+
+
+        }
+
+        @FunctionalInterface
+        interface EstimateConsumer {
+            fun accept(pose: Pose2d, timestamp : Double , estimationStdDevs : Matrix<N3, N1>  )
+        }
+
+
 }
