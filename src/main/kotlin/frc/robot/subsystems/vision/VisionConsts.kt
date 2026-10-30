@@ -17,4 +17,5 @@ val robotToCam =
     Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, -camPitch, 0.0))
 val kSingleTagStdDevs: Matrix<N3, N1> = VecBuilder.fill(4.0, 4.0, 8.0)
 val kMultiTagStdDevs: Matrix<N3, N1> = VecBuilder.fill(0.5, 0.5, 1.0)
-val transform3d = Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, -camPitch, 0.0))
+val transform3d =
+    Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, -camPitch, 0.0))
